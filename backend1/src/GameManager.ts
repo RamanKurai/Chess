@@ -1,12 +1,15 @@
 import { WebSocket } from "ws";
+import { Game } from "./Game";
 
 export class GameManager {
-    private Game : Game[];
-    private pendingUser : WebSocket;
+    private games : Game[];
+    private pendingUser : WebSocket | null;
     private users :WebSocket[];
 
     constructor() {
-        this.Game = [];
+        this.games = [];
+        this.pendingUser = null;
+        this.users = [];
     }
 
     addUser(socket : WebSocket) {
@@ -25,6 +28,9 @@ export class GameManager {
             if (message.type === "join") {
                 if (this.pendingUser) {
                     //start the game
+                    const game = new Game(this.pendingUser , socket)
+                    this.games.push(game);
+                    this.pendingUser = null;
                 }
             } else {
                 this.pendingUser = socket;
