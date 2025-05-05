@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc -b && node dist/index.js" 
+    "dev": "tsc -b && node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +12,7 @@
   "type": "commonjs",
   "dependencies": {
     "@types/ws": "^8.18.1",
+    "chess.js": "^1.2.0",
     "typescript": "^5.8.3",
     "ws": "^8.18.1"
   }
