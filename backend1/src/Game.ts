@@ -8,7 +8,7 @@ export class Game {
    public board:  Chess;
    private startTime : Date;
     
-    constructor  (player1 : WebSocket , player2 : WebSocket){
+    constructor (player1 : WebSocket , player2 : WebSocket){
         this.player1 = player1;
         this.player2 = player2;
         this.board =  new Chess();
@@ -34,13 +34,14 @@ export class Game {
       if (this.board.moves.length %2 === 0 && socket !== this.player1 ) {
         return;
       }
-      if (this.board.moves.length %2 === 0 && socket !== this.player2) {
+      if (this.board.moves.length %2 === 1 && socket !== this.player2) {
         return;
       }
       
       try {
         this.board.move(move)
       } catch (e) {
+        console.log(e)
         return;
       }
       

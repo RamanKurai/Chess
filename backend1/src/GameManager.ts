@@ -28,14 +28,15 @@ export class GameManager {
             const message = JSON.parse(data.toString());
             if (message.type === INIT_GAME) {
                 if (this.pendingUser) {
-                    const game = new Game(this.pendingUser , socket)
+                    const game = new Game(this.pendingUser, socket);
                     this.games.push(game);
                     this.pendingUser = null;
+                    console.log("Game started!");
+                } else {
+                    this.pendingUser = socket;
+                    console.log("Waiting for opponent...");
                 }
-            } else {
-                this.pendingUser = socket;
             }
-
             if (message.type === MOVE) {
                 const game = this.games.find(game => game.player1 == socket || game.player2 == socket)
                 if (game) {
