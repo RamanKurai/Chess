@@ -51,7 +51,7 @@ export const Game = () => {
     <div className="flex justify-center" >
       <div className="pt-8 max-w-screen-lg w-full" >
         <div className="grid grid-cols-6 gap-4 md:grid-cols-2 w-full" >
-          <div className="col-span-4 bg-red-200 w-full" >
+          <div className="col-span-4 w-full flex justify-center" >
              <ChessBoard board={board}  />
           </div>
         <div className="col-span-2 w-full bg-" >

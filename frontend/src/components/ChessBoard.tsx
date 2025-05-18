@@ -12,7 +12,7 @@ const ChessBoard = ({ board } : {
       {board.map((row, i) => (
         <div key={i} className="flex">
           {row.map((square, j) => (
-            <div key={j} className={`w-8 h-8 ${square ? 'bg-green-500' : 'bg-green-300'}`}>
+            <div key={j} className={`w-12 h-12 ${(i+j)%2 === 0 ? 'bg-[#ebecd0]' : 'bg-[#769456]'}`}>
               {square ? square.type : ""}
             </div>
           ))}
