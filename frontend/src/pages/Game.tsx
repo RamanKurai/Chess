@@ -54,14 +54,15 @@ export const Game = () => {
           <div className="col-span-4 w-full flex justify-center" >
              <ChessBoard board={board}  />
           </div>
-        <div className="col-span-2 w-full bg-" >
-           <Button onClick={() => 
+        <div className="col-span-2 w-full flex justify-center" >
+           <div className="pt-8"><Button onClick={() => 
             socket?.send(JSON.stringify({
               type : INIT_GAME
             }))
            }>
             Play
           </Button>
+          </div>
         </div>
       </div>
     </div>
