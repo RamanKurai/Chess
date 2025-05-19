@@ -1,73 +1,89 @@
 import { useEffect, useState } from "react";
-import Button from "../components/Button"
-import ChessBoard from "../components/ChessBoard"
+import Button from "../components/Button";
+import ChessBoard from "../components/ChessBoard";
 import { useSocket } from "../hooks/useSocket";
 import { Chess } from "chess.js";
 
-export const INIT_GAME = "init_game"
-
-export const MOVE = "move"
-
-export const GAME_OVER = "game_over"
-
+export const INIT_GAME = "init_game";
+export const MOVE = "move";
+export const GAME_OVER = "game_over";
 
 export const Game = () => {
   const socket = useSocket();
-  const [chess , setChess] = useState(new Chess());
-  const [board, setBoard] = useState(() => (new Chess()).board());
-  
+  const [chess, setChess] = useState(new Chess());
+  const [board, setBoard] = useState(() => new Chess().board());
+  const [color, setColor] = useState<"white" | "black" | null>(null);
+  const [waitingForGame, setWaitingForGame] = useState(false);
+
   useEffect(() => {
     if (!socket) {
-      return ;
+      return;
     }
-    socket.onmessage =  (event) => {
+    socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log(message);
+      console.log("Received message from server:", message);
       switch (message.type) {
-        case INIT_GAME : 
-        setChess(new Chess());
-        setBoard(chess.board());
-        console.log("Game initialized")
-        break;
+        case INIT_GAME:
+          // Reset chess instance and board for new game
+          const newChess = new Chess();
+          setChess(newChess);
+          setBoard(newChess.board());
+          setColor(message.payload.color);
+          setWaitingForGame(false);
+          console.log("Game initialized");
+          break;
         case MOVE:
-          const move = message.payload;
+          const move = message.payload.move || message.payload;
           chess.move(move);
           setBoard(chess.board());
           console.log("Move made");
           break;
         case GAME_OVER:
-        console.log("Game over")
-        break;
+          console.log("Game over");
+          break;
       }
-    }
+    };
   }, [socket]);
 
+  const handlePlay = () => {
+    if (!waitingForGame) {
+      socket?.send(
+        JSON.stringify({
+          type: INIT_GAME,
+        })
+      );
+      setWaitingForGame(true);
+      setColor(null);
+    }
+  };
+
   if (!socket) {
-    return <div>
-      Connecting...
-    </div>
+    return <div>Connecting...</div>;
   }
   return (
-    <div className="flex justify-center" >
-      <div className="pt-8 max-w-screen-lg w-full" >
-        <div className="grid grid-cols-6 gap-4 md:grid-cols-2 w-full" >
-          <div className="col-span-4 w-full flex justify-center" >
-             <ChessBoard board={board}  />
+    <div className="flex justify-center">
+      <div className="pt-8 max-w-screen-lg w-full">
+        <div className="grid grid-cols-6 gap-4 md:grid-cols-2 w-full">
+          <div className="col-span-4 w-full flex justify-center">
+            <ChessBoard
+              chess={chess}
+              setBoard={setBoard}
+              socket={socket}
+              board={board}
+              color={color}
+            />
           </div>
-        <div className="col-span-2 w-full flex justify-center" >
-           <div className="pt-8"><Button onClick={() => 
-            socket?.send(JSON.stringify({
-              type : INIT_GAME
-            }))
-           }>
-            Play
-          </Button>
+          <div className="col-span-2 w-full flex justify-center">
+            <div className="pt-8">
+              <Button onClick={handlePlay}>
+                {waitingForGame ? "Waiting..." : "Play"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    </div>
-  )
-}
+  );
+};
 
-export default Game
+export default Game;
