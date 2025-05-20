@@ -42,10 +42,11 @@ export class GameManager {
                 console.log("Waiting for opponent...");
             }
         } else if (message.type === MOVE) {
-            console.log("Received MOVE", message.move);
+            const move = message.payload.move;
+            console.log("Received MOVE", move);
             const game = this.games.find(g => g.player1 === socket || g.player2 === socket);
             if (game) {
-                game.makeMove(socket, message.move);
+                game.makeMove(socket, move);
                 console.log("Move processed.");
             } else {
                 console.log("No game found for this player.");
