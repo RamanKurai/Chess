@@ -21,18 +21,25 @@ const ChessBoard = ({
   board,
   socket,
   color,
+  setBoard,
+  chess,
 }: {
-  board: ({
-    square: Square;
-    type: PieceSymbol;
-    color: Color;
-  } | null)[][];
+  board: (
+    | {
+        square: Square;
+        type: PieceSymbol;
+        color: Color;
+      }
+    | null
+  )[][];
   socket: WebSocket;
   setBoard: any;
   chess: any;
   color?: "white" | "black" | null;
 }) => {
   const [from, setFrom] = useState<null | Square>(null);
+
+
   return (
     <div className="text-white-200">
       {board.map((row, i) => (
@@ -43,32 +50,38 @@ const ChessBoard = ({
             return (
               <div
                 onClick={() => {
-                  if (!color) return; // Don't allow moves if color not assigned
-                  if (!from) {
-                    setFrom(squareRepresentation as Square);
-                  } else {
-                    // Only send move to server, don't update board locally
-                    socket.send(
-                      JSON.stringify({
-                        type: MOVE,
-                        payload: {
-                          move: {
-                            from: from,
-                            to: squareRepresentation,
-                          },
-                        },
-                      })
-                    );
-                    setFrom(null);
-                  }
-                }}
-                key={j}
+  if (!color) {
+    console.log("No color assigned yet");
+    return;
+  }
+
+  console.log("Clicked square:", squareRepresentation);
+
+  if (!from) {
+    setFrom(squareRepresentation as Square);
+    console.log("Selected from square:", squareRepresentation);
+  } else {
+    const movePayload = {
+      type: MOVE,
+      payload: {
+        move: {
+          from: from,
+          to: squareRepresentation,
+        },
+      },
+    };
+    console.log("Sending move:", movePayload);
+    socket.send(JSON.stringify(movePayload));
+    setFrom(null);
+  }
+}}
+key={j}
                 className={`w-12 h-12 ${
                   (i + j) % 2 === 0 ? "bg-[#ebecd0]" : "bg-[#769456]"
                 }`}
               >
                 <div className="w-full h-full flex justify-center ">
-                  <div className="h-full justify-center flex flex-col">
+                  <div className="h-full justify-center flex flex-col cursor-pointer">
                     {square ? (
                       <img
                         src={pieceImages[square.color[0] + square.type]}
